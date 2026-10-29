@@ -1,0 +1,148 @@
+/* ============================================================
+   App 外壳 + 底部导航
+   ============================================================ */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-base, #0a0a0a);
+}
+
+.app__main {
+  flex: 1;
+  animation: pageIn var(--dur-medium, 250ms) var(--motion-decel, cubic-bezier(0.05, 0.7, 0.1, 1));
+}
+
+/* 侧滑时禁用入场动画，避免 transform 被动画覆盖 */
+.app__main.is-swiping {
+  animation: none;
+}
+
+/* ── 侧边手势指示器 ─────────────────────────────────── */
+.edge-ind {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px 12px 10px;
+  pointer-events: none;
+  transition: opacity 120ms linear;
+}
+
+.edge-ind__ring {
+  --p: 0;
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--primary-300, #5dd9a0);
+  background: rgba(20, 24, 22, 0.9);
+  border: 1.5px solid rgba(93, 217, 160, 0.35);
+  backdrop-filter: blur(12px);
+  /* 进度环：用 conic-gradient 表示滑动进度 */
+  box-shadow:
+    0 0 0 calc(var(--p) * 1.5px) rgba(93, 217, 160, calc(var(--p) * 0.28));
+}
+
+.edge-ind__ring::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 180deg,
+    var(--primary-300, #5dd9a0) calc(var(--p) * 360deg),
+    transparent calc(var(--p) * 360deg)
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 17.5px, #000 18px);
+  mask: radial-gradient(circle, transparent 0 17.5px, #000 18px);
+  pointer-events: none;
+}
+
+.edge-ind__ring svg {
+  position: relative;
+  z-index: 1;
+  transform: translateX(calc(var(--p) * 3px));
+}
+
+.edge-ind__label {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary, #7b8380);
+  background: rgba(10, 10, 10, 0.72);
+  padding: 3px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.edge-ind.is-done .edge-ind__ring {
+  color: #061a10;
+  background: var(--primary-300, #5dd9a0);
+  border-color: var(--primary-300, #5dd9a0);
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── 底部导航 ───────────────────────────────────────── */
+.nav {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+  padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  background: rgba(10, 10, 10, 0.86);
+  backdrop-filter: blur(24px);
+  border-top: 0.5px solid var(--n-15, #2a2f2d);
+}
+
+.nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  border-radius: var(--shape-lg, 16px);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--text-tertiary, #7b8380);
+  transition:
+    color var(--dur-short, 150ms) var(--motion-standard),
+    transform var(--dur-medium, 250ms) var(--motion-spring);
+}
+
+.nav__item svg {
+  transition: transform var(--dur-medium, 250ms) var(--motion-spring);
+}
+
+.nav__item.is-active {
+  color: var(--primary-300, #5dd9a0);
+}
+
+.nav__item.is-active svg {
+  transform: translateY(-1px) scale(1.06);
+}
+
+.nav__item:active {
+  transform: scale(0.94);
+}

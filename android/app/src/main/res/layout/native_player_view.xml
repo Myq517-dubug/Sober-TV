@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    原生播放画面
+
+    用 media3 官方 PlayerView 而不是手写 TextureView：
+      · surface_type=surface_view → 视频直接由系统合成器上屏。
+        实测（v1.7.4）TextureView 下 ExoPlayer 已渲染首帧
+        （video/avc 1920×1080 首帧OK）但屏幕全黑，
+        属于该机型上 TextureView 的合成问题，改用 SurfaceView 绕开。
+      · resize_mode=zoom → 等比放大铺满（cover），超出部分裁切；
+        运行时用 PlayerView.setResizeMode(RESIZE_MODE_FIT) 切成完整显示
+      · 关闭控制器，控制条仍由 NativePlayerPlugin 自绘
+-->
+<androidx.media3.ui.PlayerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/native_player_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    app:surface_type="surface_view"
+    app:use_controller="false"
+    app:resize_mode="zoom"
+    app:shutter_background_color="@android:color/black"
+    app:keep_content_on_player_reset="true" />

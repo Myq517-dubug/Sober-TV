@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sober TV 品牌色：曜石黑 + 薄荷绿 -->
+    <color name="brand_primary">#4ADE80</color>
+    <color name="brand_primary_dark">#22A655</color>
+    <color name="brand_surface">#0A0A0A</color>
+    <color name="brand_surface_2">#141616</color>
+
+    <!-- 保留 Capacitor 默认引用 -->
+    <color name="colorPrimary">#4ADE80</color>
+    <color name="colorPrimaryDark">#0A0A0A</color>
+    <color name="colorAccent">#4ADE80</color>
+</resources>

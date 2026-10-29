@@ -1,0 +1,128 @@
+.poster-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border-radius: var(--shape-lg, 16px);
+  transition:
+    transform var(--dur-medium, 250ms) var(--motion-spring),
+    filter var(--dur-medium, 250ms) var(--motion-standard);
+  animation: expressIn var(--dur-long, 400ms) var(--motion-decel, cubic-bezier(0.05, 0.7, 0.1, 1))
+    backwards;
+  will-change: transform;
+}
+
+.poster-card:focus-visible,
+.poster-card[data-focused='true'] {
+  outline: none;
+  transform: translateY(-4px) scale(1.03);
+}
+
+.poster-card:focus-visible .poster-card__art,
+.poster-card[data-focused='true'] .poster-card__art {
+  box-shadow:
+    0 0 0 2px var(--primary-400, #4ade80),
+    var(--elev-3);
+}
+
+.poster-card__art {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--shape-lg, 16px);
+  overflow: hidden;
+  background: var(--bg-surface-2, #212524);
+  box-shadow: var(--elev-1);
+  transition: box-shadow var(--dur-medium, 250ms) var(--motion-standard);
+}
+
+.poster-card__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-long, 400ms) var(--motion-spring);
+}
+
+.poster-card:hover .poster-card__art img {
+  transform: scale(1.06);
+}
+
+/* 高光扫过 —— Expressive 的质感细节 */
+.poster-card__sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.07) 45%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-long, 400ms) var(--motion-standard);
+}
+
+.poster-card:hover .poster-card__sheen,
+.poster-card[data-focused='true'] .poster-card__sheen {
+  opacity: 1;
+}
+
+.poster-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--n-30, #5a615e);
+  background: linear-gradient(160deg, var(--bg-surface-2, #212524), var(--bg-surface, #141616));
+}
+
+/*
+ * 片名首字占位
+ *
+ * 海报加载失败（CDN 挂了、链接失效）时的兜底。
+ * 比通用图标更有辨识度 —— 用户能直接认出这是哪部片，
+ * 而不是以为「App 加载不出来」。
+ */
+.poster-card__initial {
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 300;
+  line-height: 1;
+  color: rgba(241, 245, 243, 0.16);
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+.poster-card__rating {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--primary-300, #5dd9a0);
+  background: rgba(10, 10, 10, 0.72);
+  backdrop-filter: blur(8px);
+  border-radius: var(--shape-full, 999px);
+  letter-spacing: 0.2px;
+}
+
+.poster-card__meta {
+  padding: 10px 2px 0;
+}
+
+.poster-card__title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--text-primary, #f1f5f3);
+  letter-spacing: 0.1px;
+}
+
+.poster-card__sub {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  line-height: 15px;
+  color: var(--text-tertiary, #7b8380);
+  letter-spacing: 0.2px;
+}

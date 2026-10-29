@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sober TV</string>
+    <string name="title_activity_main">Sober TV</string>
+    <string name="package_name">com.sobertv.app</string>
+    <string name="custom_url_scheme">com.sobertv.app</string>
+</resources>

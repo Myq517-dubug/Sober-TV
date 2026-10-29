@@ -1,0 +1,373 @@
+/* ── 播放控制条 ──────────────────────────────────────
+   设计基调：曜石黑半透明玻璃 + 薄荷绿进度。
+   触控目标不小于 40px，符合移动端可点性。 */
+
+/*
+ * 控制条定位在「播放台底边」
+ *
+ * --pbar-bottom 由 JS 计算：
+ *   stage 底边 = (屏幕高 - stage 高) / 2
+ * 这样横屏视频在竖屏里也不会出现「画面在上、控制条在最底」的割裂感。
+ */
+.pbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--pbar-bottom, 0px);
+  /*
+   * 底部内边距用原生实测的安全区（--safe-b），
+   * 不能用 env(safe-area-inset-bottom)：
+   *   Android WebView 上它在沉浸式下常为 0，
+   *   导致底部按钮被导航条（小白条）压住 —— 用户实测反馈。
+   */
+  padding: 12px 14px calc(14px + var(--safe-b, 0px));
+  background: linear-gradient(
+    to top,
+    rgba(6, 8, 7, 0.94) 0%,
+    rgba(6, 8, 7, 0.82) 55%,
+    rgba(6, 8, 7, 0) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: pbar-in 0.22s var(--motion-standard, ease);
+  /* 显示回来时也要有淡入（入场动画只在挂载时播一次） */
+  transition:
+    opacity 0.22s var(--motion-standard, ease),
+    transform 0.22s var(--motion-standard, ease);
+}
+
+@keyframes pbar-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+ * 隐藏态（横屏全屏自动收起）
+ *
+ * ⚠️ 必须同时断掉 pointer-events：
+ *   控制条是 absolute 定位在播放台底部，
+ *   即使 opacity 归零，仍会挡住下方的视频点击手势
+ *   （表现为「点了没反应」）。
+ * 用 visibility 而不是 display，保证淡出过渡能正常播放。
+ */
+.pbar.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition:
+    opacity 0.22s var(--motion-standard, ease),
+    transform 0.22s var(--motion-standard, ease),
+    visibility 0s linear 0.22s;
+}
+
+/* ── 标题区 ───────────────────────────────────────── */
+.pbar__head {
+  margin-bottom: 10px;
+}
+
+.pbar__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f1f5f3;
+  letter-spacing: 0.01em;
+}
+
+.pbar__sub {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: rgba(241, 245, 243, 0.58);
+}
+
+/* ── 进度行 ───────────────────────────────────────── */
+.pbar__seekrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pbar__time {
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(241, 245, 243, 0.72);
+  min-width: 38px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.pbar__time--total {
+  color: rgba(241, 245, 243, 0.45);
+}
+
+/* 轨道容器 */
+.pbar__track {
+  position: relative;
+  flex: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* 缓冲层 */
+.pbar__buffer {
+  position: absolute;
+  left: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(241, 245, 243, 0.2);
+  pointer-events: none;
+  transition: width 0.25s linear;
+}
+
+/* 原生 range 控件 —— 透明化后用背景渐变画进度 */
+.pbar__range {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* 轨道 */
+.pbar__range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--primary-400, #4ade80) 0%,
+    var(--primary-400, #4ade80) var(--pbar-pct, 0%),
+    rgba(241, 245, 243, 0.16) var(--pbar-pct, 0%),
+    rgba(241, 245, 243, 0.16) 100%
+  );
+}
+
+.pbar__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--primary-400, #4ade80);
+  border: 2px solid #0a0a0a;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s var(--motion-standard, ease);
+}
+
+.pbar__range:active::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+
+/* Firefox */
+.pbar__range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(241, 245, 243, 0.16);
+}
+
+.pbar__range::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--primary-400, #4ade80);
+}
+
+.pbar__range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary-400, #4ade80);
+  border: 2px solid #0a0a0a;
+}
+
+/* ── 操作行 ───────────────────────────────────────── */
+.pbar__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pbar__spacer {
+  flex: 1;
+}
+
+.pbar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(241, 245, 243, 0.1);
+  color: #f1f5f3;
+  cursor: pointer;
+  transition:
+    transform 0.15s var(--motion-standard, ease),
+    background-color 0.15s var(--motion-standard, ease);
+}
+
+.pbar__btn:active {
+  transform: scale(0.92);
+  background: rgba(241, 245, 243, 0.18);
+}
+
+.pbar__btn--play {
+  background: var(--primary-400, #4ade80);
+  color: #07130c;
+}
+
+.pbar__btn--play:active {
+  background: var(--primary-300, #6ee79a);
+}
+
+.pbar__chip {
+  min-width: 42px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(241, 245, 243, 0.16);
+  border-radius: 999px;
+  background: rgba(241, 245, 243, 0.06);
+  color: rgba(241, 245, 243, 0.86);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--motion-standard, ease),
+    border-color 0.15s var(--motion-standard, ease),
+    transform 0.15s var(--motion-standard, ease);
+}
+
+.pbar__chip:active {
+  transform: scale(0.94);
+}
+
+.pbar__chip.is-active {
+  border-color: var(--primary-400, #4ade80);
+  background: rgba(74, 222, 128, 0.16);
+  color: var(--primary-300, #6ee79a);
+}
+
+/* ── 弹出菜单 ─────────────────────────────────────── */
+.pbar__menuwrap {
+  position: relative;
+}
+
+.pbar__menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  min-width: 108px;
+  padding: 5px;
+  border-radius: 14px;
+  background: rgba(18, 22, 20, 0.97);
+  border: 1px solid rgba(241, 245, 243, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: pbar-menu-in 0.16s var(--motion-standard, ease);
+  z-index: 5;
+}
+
+@keyframes pbar-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pbar__menuitem {
+  padding: 9px 14px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(241, 245, 243, 0.78);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s ease;
+}
+
+.pbar__menuitem:hover {
+  background: rgba(241, 245, 243, 0.08);
+}
+
+.pbar__menuitem.is-on {
+  color: var(--primary-300, #6ee79a);
+  font-weight: 600;
+}
+
+/* 菜单分隔线：把「线路」和「字幕/音效」分组 */
+.pbar__menusep {
+  height: 1px;
+  margin: 3px 8px;
+  background: rgba(241, 245, 243, 0.1);
+}
+
+/* 二级菜单的返回标题（音效） */
+.pbar__menuback {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px 7px;
+  border: none;
+  border-bottom: 1px solid rgba(241, 245, 243, 0.08);
+  background: transparent;
+  color: rgba(241, 245, 243, 0.55);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pbar__menuback::before {
+  content: '‹';
+  margin-right: 6px;
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* ── 图标按钮（横屏 / 投屏）──────────────────────── */
+.pbar__iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(241, 245, 243, 0.06);
+  color: rgba(241, 245, 243, 0.86);
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--motion-standard, ease),
+    color 0.15s var(--motion-standard, ease),
+    transform 0.15s var(--motion-standard, ease);
+}
+
+.pbar__iconbtn:active {
+  transform: scale(0.92);
+}
+
+.pbar__iconbtn.is-active {
+  background: rgba(74, 222, 128, 0.18);
+  color: var(--primary-300, #6ee79a);
+}

@@ -1,0 +1,41 @@
+{
+  "name": "sober-tv",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sober TV — 高端简约的 Android 影视聚合客户端",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "server": "node server/index.js",
+    "server:dev": "node --watch server/index.js",
+    "sync": "npm run build && cap sync android",
+    "sync:ios": "npm run build && cap sync ios",
+    "apk": "npm run sync && cd android && ./gradlew assembleRelease",
+    "apk:debug": "npm run sync && cd android && ./gradlew assembleDebug",
+    "apk:split": "npm run sync && cd android && ./gradlew assembleRelease && node scripts/split-apk.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/haptics": "^7.0.0",
+    "@capacitor/ios": "^7.6.10",
+    "@capacitor/keyboard": "^7.0.0",
+    "@capacitor/preferences": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0",
+    "hls.js": "^1.5.20",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "playwright-core": "^1.64.1",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  }
+}

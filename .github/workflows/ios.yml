@@ -1,0 +1,87 @@
+name: iOS 云构建
+
+# 没有 Mac 的构建路径：
+#   GitHub 的 macOS runner 里生成 ios 工程 → 打未签名 ipa → 下载回来用
+#   Windows + Sideloadly 自签装真机。产物保留 7 天。
+#
+# 只出未签名包，不碰证书，所以不需要 Apple 开发者账号。
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.ts'
+      - 'vite.config.ts'
+      - 'scripts/ios-prepare.sh'
+      - '.github/workflows/ios.yml'
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 准备 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建 Web 产物
+        run: npm run build
+
+      - name: 生成 iOS 工程（首次）
+        run: |
+          if [ ! -d "ios/App" ]; then
+            npx cap add ios
+          else
+            echo "ios 工程已存在，跳过 cap add"
+          fi
+
+      - name: 修补 Info.plist
+        run: bash scripts/ios-prepare.sh ios/App/App/Info.plist
+
+      - name: 同步 Web 产物与 Pod
+        run: npx cap sync ios
+
+      - name: 构建未签名 ipa
+        run: |
+          set -euo pipefail
+          cd ios/App
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$RUNNER_TEMP/dd/Build/Products/Release-iphoneos/App.app" "$RUNNER_TEMP/Payload/"
+          cd "$RUNNER_TEMP"
+          zip -qry SoberTV-unsigned.ipa Payload
+          ls -lh SoberTV-unsigned.ipa
+
+      - name: 上传 ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoberTV-unsigned-ipa
+          path: ${{ runner.temp }}/SoberTV-unsigned.ipa
+          retention-days: 7

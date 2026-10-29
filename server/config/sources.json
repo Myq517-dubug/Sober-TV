@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-10-26",
+  "sources": [
+    {
+      "id": "demo-direct",
+      "name": "演示源（公共测试流）",
+      "type": "direct",
+      "categories": ["movie", "tv", "anime", "live", "variety", "doc"],
+      "enabled": true,
+      "order": 100,
+      "weight": 1000,
+      "official": true,
+      "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+      "note": "公共 HLS 测试流，用于验证播放链路与容错逻辑"
+    }
+  ]
+}

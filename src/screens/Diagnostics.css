@@ -1,0 +1,218 @@
+/* ── 网络与播放诊断页 ──────────────────────────────── */
+
+.diag {
+  padding: var(--space-lg, 16px);
+  padding-bottom: calc(var(--space-xl, 24px) + env(safe-area-inset-bottom, 0px));
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 12px);
+}
+
+.diag__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.diag__back {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--surface-container, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--outline-variant, rgba(255, 255, 255, 0.07));
+  color: var(--text-primary, #f1f5f3);
+  cursor: pointer;
+}
+
+.diag__headtext {
+  flex: 1;
+  min-width: 0;
+}
+
+.diag__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.diag__sub {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--text-tertiary, #7b8380);
+}
+
+/* ── 统计 ──────────────────────────────────────────── */
+.diag__summary {
+  display: flex;
+  gap: 10px;
+}
+
+.diag__stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 8px;
+  border-radius: var(--shape-md, 12px);
+  background: var(--surface-container-low, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--outline-variant, rgba(255, 255, 255, 0.07));
+}
+
+.diag__stat.is-ok {
+  border-color: rgba(74, 222, 128, 0.28);
+}
+
+.diag__stat.is-bad {
+  border-color: rgba(255, 107, 107, 0.32);
+}
+
+.diag__stat-num {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary, #f1f5f3);
+  font-variant-numeric: tabular-nums;
+}
+
+.diag__stat.is-ok .diag__stat-num {
+  color: var(--primary-400, #4ade80);
+}
+
+.diag__stat.is-bad .diag__stat-num {
+  color: var(--error, #ff6b6b);
+}
+
+.diag__stat-label {
+  font-size: 11.5px;
+  color: var(--text-tertiary, #7b8380);
+}
+
+/* ── 分组 ──────────────────────────────────────────── */
+.diag__group-title {
+  margin: 8px 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #b9c0bd);
+  letter-spacing: 0.02em;
+}
+
+.diag__list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.diag__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--shape-sm, 10px);
+  background: var(--surface-container-low, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--outline-variant, rgba(255, 255, 255, 0.07));
+}
+
+.diag__item--fail {
+  border-color: rgba(255, 107, 107, 0.3);
+  background: rgba(255, 107, 107, 0.05);
+}
+
+.diag__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+  background: var(--text-tertiary, #7b8380);
+}
+
+.diag__item--pass .diag__dot {
+  background: var(--primary-400, #4ade80);
+}
+
+.diag__item--fail .diag__dot {
+  background: var(--error, #ff6b6b);
+}
+
+.diag__item--skip .diag__dot {
+  background: var(--n30, #5a615e);
+}
+
+.diag__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.diag__row1 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.diag__label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.diag__ms {
+  font-size: 11px;
+  color: var(--text-tertiary, #7b8380);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.diag__detail {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary, #b9c0bd);
+  line-height: 1.45;
+}
+
+.diag__error {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--error, #ff6b6b);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.diag__url {
+  margin: 4px 0 0;
+  font-size: 10.5px;
+  color: var(--text-tertiary, #7b8380);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-all;
+  opacity: 0.8;
+}
+
+.diag__foot {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: var(--shape-md, 12px);
+  background: rgba(74, 222, 128, 0.06);
+  border: 1px solid rgba(74, 222, 128, 0.18);
+}
+
+.diag__hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--primary-300, #5dd9a0);
+}
+
+/* ── 头部按钮组 ──────────────────────────────────── */
+.diag__headbtns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}

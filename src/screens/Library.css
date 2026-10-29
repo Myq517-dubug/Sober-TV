@@ -1,0 +1,110 @@
+.library {
+  padding: var(--space-xl, 24px);
+  padding-bottom: var(--space-xxxl, 48px);
+  min-height: 100vh;
+}
+
+.library__head {
+  margin-bottom: var(--space-xl, 24px);
+}
+
+.library__title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.3px;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.library__count {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  color: var(--text-tertiary, #7b8380);
+}
+
+/* ── 黑名单管理 ─────────────────────────────────────── */
+.blocked {
+  margin-bottom: var(--space-xl, 24px);
+  padding: var(--space-lg, 16px);
+  border-radius: var(--shape-xl, 24px);
+  background: var(--bg-surface, #141616);
+  box-shadow: inset 0 0 0 1px var(--n-15, #2a2f2d);
+  animation: expressIn var(--dur-medium, 250ms) var(--motion-decel, cubic-bezier(0.05, 0.7, 0.1, 1));
+}
+
+.blocked__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.blocked__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.blocked__empty {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-tertiary, #7b8380);
+}
+
+.blocked__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.blocked__chip {
+  padding: 5px 12px;
+  border-radius: var(--shape-full, 999px);
+  font-size: 12px;
+  color: var(--error, #ff6b6b);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* ── 分区 ───────────────────────────────────────────── */
+.lib-row {
+  margin-bottom: var(--space-xxl, 32px);
+}
+
+.lib-row__head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: var(--space-md, 12px);
+}
+
+.lib-row__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.lib-row__count {
+  font-size: 11.5px;
+  color: var(--text-tertiary, #7b8380);
+}
+
+.lib-row__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-lg, 16px);
+}
+
+@media (min-width: 700px) {
+  .lib-row__grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+.library__foot {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-xl, 24px);
+}

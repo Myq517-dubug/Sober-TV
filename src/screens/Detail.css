@@ -1,0 +1,843 @@
+/* ============================================================
+   详情页 + 播放
+   ============================================================ */
+
+.detail {
+  min-height: 100vh;
+  background: var(--bg-base, #0a0a0a);
+}
+
+.detail__hero {
+  position: relative;
+  min-height: 420px;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-xxxl, 48px) var(--space-xl, 24px) var(--space-xl, 24px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.detail__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.detail__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.detail__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, var(--bg-base, #0a0a0a) 3%, rgba(10, 10, 10, 0.75) 40%, transparent 80%),
+    linear-gradient(to right, rgba(10, 10, 10, 0.94) 0%, rgba(10, 10, 10, 0.45) 60%, transparent 100%);
+}
+
+.detail__back {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--shape-full, 999px);
+  background: rgba(20, 22, 22, 0.72);
+  backdrop-filter: blur(12px);
+  color: var(--text-primary, #f1f5f3);
+  transition: transform var(--dur-medium, 250ms) var(--motion-spring);
+  z-index: 3;
+}
+
+.detail__back:active {
+  transform: scale(0.9);
+}
+
+.detail__body {
+  position: relative;
+  max-width: 720px;
+  animation: expressIn var(--dur-long, 400ms) var(--motion-decel, cubic-bezier(0.05, 0.7, 0.1, 1));
+}
+
+.detail__title {
+  margin: 0;
+  font-size: clamp(26px, 6vw, 40px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.4px;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.detail__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--text-secondary, #b9c0bd);
+}
+
+.detail__score {
+  padding: 1px 8px;
+  border-radius: var(--shape-full, 999px);
+  background: rgba(74, 222, 128, 0.16);
+  color: var(--primary-300, #5dd9a0);
+  font-weight: 500;
+}
+
+.detail__overview {
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary, #b9c0bd);
+  max-width: 640px;
+}
+
+.detail__seasons {
+  margin-top: 26px;
+}
+
+.detail__season-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.season-tab {
+  padding: 6px 14px;
+  border-radius: var(--shape-full, 999px);
+  font-size: 12.5px;
+  color: var(--text-secondary, #b9c0bd);
+  background: var(--bg-surface-2, #212524);
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-short, 150ms) var(--motion-standard),
+    color var(--dur-short, 150ms) var(--motion-standard);
+}
+
+.season-tab.is-active {
+  background: var(--primary-400, #4ade80);
+  color: var(--n-4, #0a0a0a);
+  font-weight: 500;
+}
+
+.detail__episodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ep-chip {
+  min-width: 38px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--shape-md, 12px);
+  font-size: 12.5px;
+  color: var(--text-secondary, #b9c0bd);
+  background: var(--bg-surface-2, #212524);
+  transition:
+    background-color var(--dur-short, 150ms) var(--motion-standard),
+    color var(--dur-short, 150ms) var(--motion-standard),
+    transform var(--dur-medium, 250ms) var(--motion-spring);
+}
+
+.ep-chip:active {
+  transform: scale(0.92);
+}
+
+.ep-chip.is-active {
+  background: var(--primary-400, #4ade80);
+  color: var(--n-4, #0a0a0a);
+  font-weight: 500;
+}
+
+.detail__actions {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ── 相似推荐 ───────────────────────────────────────── */
+.detail__similar {
+  padding: 0 var(--space-xl, 24px) var(--space-xxxl, 48px);
+}
+
+.detail__similar-title {
+  margin: 0 0 var(--space-md, 12px);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.detail__similar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-md, 12px);
+}
+
+/* ── 播放器外壳 ─────────────────────────────────────── */
+.detail--playing {
+  background: #000;
+}
+
+.player-shell {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  z-index: 40;
+}
+
+/*
+ * 播放台 —— 永远从屏幕左上角起铺满
+ *
+ * 旧实现用 --stage-x/y 把舞台平移到「安全区中心」，挖孔屏横屏时
+ * 左右 inset 不等会让画面整体偏移；用 --stage-w 按 16:9 占位时
+ * 宽银幕片又只占 80% 屏宽。两者叠加就是用户看到的「没铺满、不对称」。
+ *
+ * 现在：左上角固定为 0，尺寸由 JS 只给「整屏宽 × 整屏高（竖屏减去控制条）」，
+ * 画面比例完全交给 object-fit —— 居中裁切/留边由浏览器保证严格对称。
+ */
+.player__stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--stage-w, 100%);
+  height: var(--stage-h, 100%);
+  background: #000;
+}
+
+/*
+ * 起播前的模糊海报底图
+ *
+ * 盖在 video 之上、控制层之下：拉流和解码期间用户看到的是
+ * 影片自己的色调（而不是一块纯黑），首帧出来后再淡出。
+ */
+.player__backdrop {
+  position: absolute;
+  inset: -6%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(26px) brightness(0.5) saturate(1.15);
+  opacity: 1;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+.player__backdrop.is-hidden {
+  opacity: 0;
+}
+
+.player__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+/* 铺满（横屏宽银幕）：左右用满、上下对称裁切，不拉伸 */
+.player__stage.is-fill .player__video {
+  object-fit: cover;
+}
+
+.player__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /*
+   * 安全区内边距 —— 用原生实测的刘海/状态栏 inset，
+   * 而不是 env(safe-area-inset-*)（Android WebView 上不可靠，
+   * 横屏挖孔屏常返回 0 → 返回按钮被刘海切掉）。
+   */
+  padding:
+    calc(var(--safe-t, 0px) + 16px)
+    calc(var(--safe-r, 0px) + 16px)
+    calc(var(--safe-b, 0px) + 16px)
+    calc(var(--safe-l, 0px) + 16px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.player__overlay > * {
+  pointer-events: auto;
+}
+
+.player__back {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--shape-full, 999px);
+  background: rgba(20, 22, 22, 0.72);
+  backdrop-filter: blur(12px);
+  color: var(--text-primary, #f1f5f3);
+  transition: transform var(--dur-medium, 250ms) var(--motion-spring);
+}
+
+.player__back:active {
+  transform: scale(0.9);
+}
+
+.player__status {
+  margin-top: auto;
+  margin-bottom: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: var(--shape-full, 999px);
+  background: rgba(10, 10, 10, 0.66);
+  backdrop-filter: blur(16px);
+  font-size: 13px;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.player__spin {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-400, #4ade80);
+  border-top-color: transparent;
+  animation: spin 700ms linear infinite;
+}
+
+.player__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ── 换源面板 ───────────────────────────────────────── */
+.lines-panel {
+  position: absolute;
+  right: 16px;
+  bottom: 72px;
+  width: min(340px, calc(100vw - 32px));
+  max-height: 62vh;
+  overflow-y: auto;
+  padding: 14px;
+  border-radius: var(--shape-xl, 24px);
+  background: rgba(16, 18, 18, 0.94);
+  backdrop-filter: blur(24px);
+  box-shadow: var(--elev-4);
+  animation: expressIn var(--dur-medium, 250ms) var(--motion-decel, cubic-bezier(0.05, 0.7, 0.1, 1));
+}
+
+.lines-panel__empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-tertiary, #7b8380);
+  text-align: center;
+  padding: 20px 0;
+}
+
+.lines-group + .lines-group {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 0.5px solid var(--n-20, #353b39);
+}
+
+.lines-group__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary, #7b8380);
+  letter-spacing: 0.3px;
+}
+
+.lines-group__badge {
+  padding: 1px 6px;
+  border-radius: var(--shape-full, 999px);
+  font-size: 10px;
+  background: rgba(74, 222, 128, 0.16);
+  color: var(--primary-300, #5dd9a0);
+}
+
+.lines-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: var(--shape-md, 12px);
+  text-align: left;
+  transition: background-color var(--dur-short, 150ms) var(--motion-standard);
+}
+
+.lines-item:hover {
+  background: var(--bg-surface-2, #212524);
+}
+
+.lines-item:active {
+  background: var(--bg-elevated, #2a2f2d);
+}
+
+.lines-item__quality {
+  flex-shrink: 0;
+  min-width: 48px;
+  padding: 2px 7px;
+  border-radius: var(--shape-sm, 8px);
+  font-size: 11px;
+  text-align: center;
+  color: var(--primary-300, #5dd9a0);
+  background: rgba(74, 222, 128, 0.12);
+}
+
+.lines-item__name {
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--text-secondary, #b9c0bd);
+}
+
+/* ── Toast ──────────────────────────────────────────── */
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 88px;
+  transform: translateX(-50%);
+  padding: 10px 18px;
+  border-radius: var(--shape-full, 999px);
+  background: rgba(20, 22, 22, 0.94);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--elev-3);
+  font-size: 13px;
+  color: var(--text-primary, #f1f5f3);
+  white-space: nowrap;
+  animation: toastIn var(--dur-medium, 250ms) var(--motion-spring);
+  z-index: 10;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* ── 控制条隐藏态（原生播放器下点击视频区切换）──── */
+.player__overlay.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.player__overlay {
+  transition: opacity 0.2s ease;
+}
+
+/* ── 选集面板 ──────────────────────────────────────── */
+.episodes-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(4, 6, 5, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: eps-fade 0.18s var(--motion-standard, ease);
+}
+
+@keyframes eps-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.episodes-panel__inner {
+  width: 100%;
+  max-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-radius: 22px 22px 0 0;
+  background: rgba(16, 20, 18, 0.98);
+  border-top: 1px solid rgba(241, 245, 243, 0.08);
+  animation: eps-up 0.26s var(--motion-standard, ease);
+}
+
+@keyframes eps-up {
+  from { transform: translateY(24px); }
+  to { transform: translateY(0); }
+}
+
+.episodes-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.episodes-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f3;
+}
+
+.episodes-panel__close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(241, 245, 243, 0.08);
+  color: rgba(241, 245, 243, 0.7);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.episodes-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 9px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.episodes-panel__item {
+  min-height: 42px;
+  padding: 8px 6px;
+  border: 1px solid rgba(241, 245, 243, 0.1);
+  border-radius: 12px;
+  background: rgba(241, 245, 243, 0.04);
+  color: rgba(241, 245, 243, 0.82);
+  font-size: 12.5px;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--motion-standard, ease),
+    border-color 0.15s var(--motion-standard, ease),
+    transform 0.15s var(--motion-standard, ease);
+}
+
+.episodes-panel__item:active {
+  transform: scale(0.94);
+}
+
+.episodes-panel__item.is-on {
+  border-color: var(--primary-400, #4ade80);
+  background: rgba(74, 222, 128, 0.16);
+  color: var(--primary-300, #6ee79a);
+  font-weight: 600;
+}
+
+/* ── 手势提示 ──────────────────────────────────────── */
+.player__gesturehint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 20px;
+  border-radius: 14px;
+  background: rgba(10, 12, 11, 0.86);
+  border: 1px solid rgba(241, 245, 243, 0.1);
+  color: #f1f5f3;
+  font-size: 15px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  z-index: 12;
+  animation: hint-pop 0.16s var(--motion-standard, ease);
+}
+
+@keyframes hint-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ── 投屏设备面板 ──────────────────────────────────── */
+.cast-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 22;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(4, 6, 5, 0.74);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: eps-fade 0.18s var(--motion-standard, ease);
+}
+
+.cast-panel__inner {
+  width: 100%;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-radius: 22px 22px 0 0;
+  background: rgba(16, 20, 18, 0.98);
+  border-top: 1px solid rgba(241, 245, 243, 0.08);
+  animation: eps-up 0.26s var(--motion-standard, ease);
+}
+
+.cast-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cast-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f3;
+}
+
+.cast-panel__hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(241, 245, 243, 0.55);
+}
+
+.cast-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cast-panel__item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid rgba(241, 245, 243, 0.1);
+  border-radius: 14px;
+  background: rgba(241, 245, 243, 0.04);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--motion-standard, ease),
+    border-color 0.15s var(--motion-standard, ease),
+    transform 0.15s var(--motion-standard, ease);
+}
+
+.cast-panel__item:active {
+  transform: scale(0.97);
+  border-color: var(--primary-400, #4ade80);
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.cast-panel__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #f1f5f3;
+}
+
+.cast-panel__desc {
+  font-size: 11.5px;
+  color: rgba(241, 245, 243, 0.5);
+}
+
+/*
+ * 横屏适配
+ *
+ * ⚠️ 这里**不能**再用媒体查询改舞台宽度。
+ *
+ * 旧写法是 `width: min(100%, calc(100vh * var(--ar-num, 1.7778)))`，
+ * 但 --ar-num 这个变量从来没被注入过 → 永远退化成 1.7778（16:9），
+ * 于是竖屏片/超宽片在横屏下被强行拉成 16:9，表现为
+ * 「画面缩成中间一小块，两边大片黑」—— 用户实测反馈。
+ *
+ * 现在舞台尺寸统一由 JS 根据真实视频宽高比 + 安全区计算，
+ * 通过 --stage-w / --stage-h 注入，CSS 不再插手。
+ */
+@media screen and (orientation: landscape) {
+  .pbar {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* ── 外挂字幕 ──────────────────────────────────────── */
+/*
+ * 字幕层独立于控制条：控制条收起时贴着画面底部，
+ * 控制条展开时上移，避免被进度条压住。
+ */
+.player__cue {
+  position: absolute;
+  left: 50%;
+  bottom: calc(8% + var(--pbar-bottom, 0px));
+  transform: translateX(-50%);
+  max-width: 86%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 11;
+  transition: bottom 0.22s var(--motion-standard, ease);
+}
+
+.player__cue.is-lifted {
+  bottom: calc(var(--pbar-bottom, 0px) + 118px + var(--safe-b, 0px));
+}
+
+.player__cue-line {
+  display: block;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 字号档位（设置页可调） */
+.player__cue--sm .player__cue-line {
+  font-size: 15px;
+}
+
+.player__cue--md .player__cue-line {
+  font-size: 19px;
+}
+
+.player__cue--lg .player__cue-line {
+  font-size: 24px;
+}
+
+/* 背景档位：无 / 描边阴影 / 半透明底板 */
+.player__cue--bg-shadow .player__cue-line {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 0 6px rgba(0, 0, 0, 0.85);
+}
+
+.player__cue--bg-none .player__cue-line {
+  text-shadow: none;
+}
+
+.player__cue--bg-box .player__cue-line {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(6, 8, 7, 0.72);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* ── 字幕面板 ──────────────────────────────────────── */
+.sub-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 22;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(4, 6, 5, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: eps-fade 0.18s var(--motion-standard, ease);
+}
+
+.sub-panel__inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 16px calc(20px + var(--safe-b, 0px));
+  border-radius: 22px 22px 0 0;
+  background: rgba(16, 20, 18, 0.98);
+  border-top: 1px solid rgba(241, 245, 243, 0.08);
+  animation: eps-up 0.26s var(--motion-standard, ease);
+}
+
+.sub-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sub-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f3;
+}
+
+.sub-panel__current {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(241, 245, 243, 0.1);
+  border-radius: 14px;
+  background: rgba(241, 245, 243, 0.04);
+}
+
+.sub-panel__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: rgba(241, 245, 243, 0.86);
+}
+
+.sub-panel__switch {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid rgba(241, 245, 243, 0.16);
+  border-radius: 999px;
+  background: rgba(241, 245, 243, 0.06);
+  color: rgba(241, 245, 243, 0.7);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sub-panel__switch.is-on {
+  border-color: var(--primary-400, #4ade80);
+  background: rgba(74, 222, 128, 0.16);
+  color: var(--primary-300, #6ee79a);
+  font-weight: 600;
+}
+
+.sub-panel__hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(241, 245, 243, 0.5);
+}
+
+.sub-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sub-panel__url {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sub-panel__url .field__input {
+  flex: 1;
+  min-width: 0;
+}

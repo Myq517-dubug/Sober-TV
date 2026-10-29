@@ -1,0 +1,38 @@
+node_modules/
+dist/
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+release/
+server/data/
+.DS_Store
+*.log
+
+# ── iOS ─────────────────────────────────────────────
+# ios/ 由 CI 或 mac 上 cap add ios 生成，Pods 与构建产物不入库
+ios/App/Pods/
+ios/App/build/
+ios/App/DerivedData/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+**/*.xcuserstate
+*.ipa
+*.dSYM.zip
+
+# ── 签名材料：任何情况下都不许进仓库 ────────────────
+*.p12
+*.mobileprovision
+*.provisionprofile
+*.keystore
+*.jks
+*.cer
+
+# ── 本地临时文件 ────────────────────────────────────
+tsconfig.tsbuildinfo
+.trae-html-share-packages/
+_rea_analysis/
+scripts/tmp-*.mjs

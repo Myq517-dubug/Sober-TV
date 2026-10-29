@@ -1,0 +1,318 @@
+/* ============================================================
+   首页 —— 曜石黑 + 薄荷绿
+   ============================================================ */
+
+.home {
+  padding-bottom: var(--space-xxxl, 48px);
+}
+
+/* ── Hero ───────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 420px;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-xxxl, 48px) var(--space-xl, 24px) var(--space-xl, 24px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.hero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  animation: heroZoom 18s var(--motion-standard) forwards;
+}
+
+@keyframes heroZoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* 多层渐变遮罩，保证文字可读 */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, var(--bg-base, #0a0a0a) 2%, rgba(10, 10, 10, 0.72) 38%, transparent 78%),
+    linear-gradient(to right, rgba(10, 10, 10, 0.92) 0%, rgba(10, 10, 10, 0.4) 55%, transparent 100%);
+}
+
+/* 品牌色氛围光 —— 呼吸动画 */
+.hero__glow {
+  position: absolute;
+  z-index: -1;
+  left: -10%;
+  bottom: -40%;
+  width: 60%;
+  height: 90%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(74, 222, 128, 0.16) 0%,
+    rgba(74, 222, 128, 0.05) 40%,
+    transparent 70%
+  );
+  animation: breathe 9s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.hero__body {
+  position: relative;
+  max-width: 620px;
+  animation: expressIn var(--dur-xlong, 600ms) var(--motion-decel, cubic-bezier(0.05, 0.7, 0.1, 1));
+}
+
+.hero__eyebrow {
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--primary-300, #5dd9a0);
+}
+
+.hero__title {
+  margin: 0;
+  font-size: clamp(30px, 7vw, 48px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.5px;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.hero__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  color: var(--text-secondary, #b9c0bd);
+  letter-spacing: 0.3px;
+}
+
+.hero__score {
+  padding: 1px 8px;
+  border-radius: var(--shape-full, 999px);
+  background: rgba(74, 222, 128, 0.16);
+  color: var(--primary-300, #5dd9a0);
+  font-weight: 500;
+}
+
+.hero__desc {
+  margin: 14px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary, #b9c0bd);
+  max-width: 540px;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+/* ── 内容行 ─────────────────────────────────────────── */
+.row {
+  margin-top: var(--space-xxl, 32px);
+}
+
+.row__head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 0 var(--space-xl, 24px);
+  margin-bottom: var(--space-md, 12px);
+}
+
+.row__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.row__sub {
+  font-size: 12px;
+  color: var(--text-tertiary, #7b8380);
+}
+
+.row__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 148px;
+  gap: var(--space-md, 12px);
+  padding: 0 var(--space-xl, 24px) var(--space-sm, 8px);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}
+
+.row__track > * {
+  scroll-snap-align: start;
+}
+
+@media (min-width: 600px) {
+  .row__track {
+    grid-auto-columns: 168px;
+  }
+}
+
+@media (min-width: 900px) {
+  .row__track {
+    grid-auto-columns: 186px;
+    gap: var(--space-lg, 16px);
+  }
+}
+
+/* ── 空状态 ─────────────────────────────────────────── */
+.home-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 60vh;
+  padding: var(--space-xl, 24px);
+  text-align: center;
+}
+
+.home-empty__icon {
+  color: var(--n-30, #5a615e);
+}
+
+.home-empty__title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.home-empty__desc {
+  margin: 0;
+  max-width: 380px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-tertiary, #7b8380);
+}
+
+/* ── 继续观看 ──────────────────────────────────────── */
+.row--continue {
+  margin-top: var(--space-lg, 20px);
+}
+
+/*
+ * 继续观看卡片
+ *
+ * 与普通海报卡（PosterCard）风格统一，但多了：
+ *   - 底部进度条（已播比例）
+ *   - 集数角标
+ *   - 「还剩 xx」文案
+ */
+.ccard {
+  display: block;
+  width: 132px;
+  flex-shrink: 0;
+  text-decoration: none;
+  animation: ccard-in 0.32s var(--motion-standard, ease) backwards;
+}
+
+@keyframes ccard-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ccard__poster {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(241, 245, 243, 0.06);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+  transition: transform 0.2s var(--motion-standard, ease);
+}
+
+.ccard:active .ccard__poster {
+  transform: scale(0.96);
+}
+
+.ccard__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ccard__nophoto {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    150deg,
+    rgba(74, 222, 128, 0.14),
+    rgba(241, 245, 243, 0.04)
+  );
+}
+
+/* 集数角标 */
+.ccard__ep {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  padding: 3px 7px;
+  border-radius: 7px;
+  background: rgba(6, 8, 7, 0.78);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #f1f5f3;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+/* 进度条 */
+.ccard__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(6, 8, 7, 0.6);
+}
+
+.ccard__barfill {
+  height: 100%;
+  background: var(--primary-400, #4ade80);
+  border-radius: 0 2px 2px 0;
+  transition: width 0.3s var(--motion-standard, ease);
+}
+
+.ccard__title {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-primary, #f1f5f3);
+}
+
+.ccard__meta {
+  margin: 3px 0 0;
+  font-size: 11px;
+  color: var(--text-tertiary, #7b8380);
+}

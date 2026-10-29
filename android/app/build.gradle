@@ -1,0 +1,115 @@
+apply plugin: 'com.android.application'
+
+// ── 发布签名配置 ──────────────────────────────────────────
+// keystore: android/keystore/sober-tv.jks
+// 口令通过 gradle.properties 或环境变量注入，不硬编码在版本库里
+def ksPath = project.findProperty('SOBER_KEYSTORE_PATH') ?: "${rootDir}/keystore/sober-tv.jks"
+def ksStorePass = project.findProperty('SOBER_KEYSTORE_PASSWORD') ?: System.getenv('SOBER_KEYSTORE_PASSWORD') ?: 'sobertv'
+def ksAliasName = project.findProperty('SOBER_KEY_ALIAS') ?: System.getenv('SOBER_KEY_ALIAS') ?: 'sober'
+def ksKeyPass = project.findProperty('SOBER_KEY_PASSWORD') ?: System.getenv('SOBER_KEY_PASSWORD') ?: 'sobertv'
+
+android {
+    namespace "com.sobertv.app"
+    compileSdk rootProject.ext.compileSdkVersion
+
+    signingConfigs {
+        release {
+            if (file(ksPath).exists()) {
+                storeFile file(ksPath)
+                // Groovy 中 `storePassword xxx` 会被解析成方法调用，必须用显式 setter
+                storePassword ksStorePass
+                keyAlias ksAliasName
+                keyPassword ksKeyPass
+            }
+        }
+    }
+    defaultConfig {
+        applicationId "com.sobertv.app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 197
+        versionName "1.7.27"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 自有签名（keystore 位于 android/keystore/sober-tv.jks）
+            signingConfig signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
+    }
+    // 注意：Capacitor 应用不含原生 .so 库，按 ABI 拆包产出的多个 APK 内容完全相同，
+    // 因此不启用 splits —— 单一 universal 包更简洁，也避免用户选错架构。
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/LICENSE*', 'META-INF/NOTICE*', 'META-INF/DEPENDENCIES']
+        }
+    }
+    // 关闭 release 的 lint 检查：Windows 中文环境下 lint 任务存在路径编码问题，
+    // 且不影响 APK 产物。CI 中可单独跑 lint。
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    // ── Media3 ExoPlayer ──────────────────────────────
+    // 原生播放器：公网影视源无 CORS 头，且 CapacitorHttp 补丁会丢弃 responseType，
+    // 导致 hls.js 无法正确读取二进制分片，故播放层下沉到原生 ExoPlayer。
+    implementation "androidx.media3:media3-exoplayer:$media3Version"
+    implementation "androidx.media3:media3-ui:$media3Version"
+    implementation "androidx.media3:media3-datasource-okhttp:$media3Version"
+
+    // ── DLNA 投屏 ────────────────────────────────────
+    // MediaRouter + RemotePlaybackClient：把 m3u8 URL 推给电视端自己拉流。
+    // 选它而非 Google Cast：Cast SDK 强依赖 GMS（国内 ROM 装上也没用），
+    // 而 MediaRouter 是系统自带组件，不依赖任何 Google 服务。
+    implementation "androidx.mediarouter:mediarouter:1.7.0"
+    // ⚠️ media3-exoplayer-hls 必须显式声明！
+    // media3-exoplayer 不会传递依赖它，缺少它 ExoPlayer 无法识别 m3u8，
+    // 加载会报 "Unsupported media type" → 表现为「点播放一直黑屏」。
+    implementation "androidx.media3:media3-exoplayer-hls:$media3Version"
+    implementation "androidx.media3:media3-exoplayer-dash:$media3Version"
+
+    // ── 直播弹幕 WebSocket ─────────────────────────────
+    // media3-datasource-okhttp 已传递依赖 okhttp，但这里显式声明，
+    // 避免上游把依赖改成 implementation 后编译期拿不到 WebSocket 类。
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

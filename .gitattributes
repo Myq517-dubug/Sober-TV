@@ -1,0 +1,6 @@
+* text=auto
+
+# macOS runner 上直接执行，必须是 LF，否则会报 bad interpreter
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
